@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs")
 const crypto = require("crypto");
-const uuidv1 = require("uuid/v1");
+const { v1: uuidv1 } = require('uuid');
+
 const userSchema = new mongoose.Schema({
     firstname: {
         type: String,
@@ -27,7 +29,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    encry_password: {
+    password: {
         type: String,
         required: true
     }
@@ -44,30 +46,11 @@ const userSchema = new mongoose.Schema({
         default: []
     }
 })
-userSchema.virtual("password")
-    .set(function (password) {
-        this._password = password;
-        this.salt = uuidv1();
-        this.encry_password = this.securePassword(password);
-    })
-    .get(function () {
-        return this.securePassword(plainpassword) === this.encry_password;
-    })
-
-userSchema.method = {
-    authenticate: function (plainpassword) {
-        return this._password
-    },
-    securePassword: function (plainpassword) {
-        if (!password) return "";
-        try {
-            return createHmac('sha256', this.salt)
-                .update(plainpassword)
-                .digest('hex');
-        } catch (err) {
-            return "";
-        }
-    }
-}
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password, 10);
+    // console.log(this.password);
+    return next();
+});
 
 module.exports = mongoose.model("User", userSchema);
