@@ -1,4 +1,6 @@
 const User = require("../models/userModel")
+const { check, validationResult } = require("express-validator")
+
 // exports.signup = async (req, res) => {
 //     const { firstname, lastname, email, password } = req.body;
 
@@ -9,17 +11,33 @@ const User = require("../models/userModel")
 //     res.send(data);
 
 // }
+
+
 exports.signup = async (req, res) => {
+    //  validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({
+            err: errors.array()[0].msg,
+            param: errors.array()[0].param
+        })
+    }
+
+    //   create user
     const user = new User(req.body)
     await user.save((err, user) => {
-        console.log(err)
-        console.log(user)
         if (err) {
             return res.status(400).json({
-                err: "not able to save user"
+                err: "not able to save user",
+
             })
         }
-        res.status(200).json(user)
+        res.status(200).json({
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            id: user._id
+        })
     })
 
 
