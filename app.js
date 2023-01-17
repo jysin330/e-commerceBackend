@@ -15,6 +15,7 @@ app.use(cors());
 // routes
 app.use("/api", authRoutes)
 
+
 const { PORT } = process.env
 app.listen(PORT, () => [
     console.log(`local host running at ${PORT}`)

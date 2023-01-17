@@ -9,8 +9,8 @@ const userSchema = new mongoose.Schema({
         trim: true,
         maxlength: 32,
         required: true
-
     },
+
     lastname:
     {
         type: String,
@@ -19,33 +19,39 @@ const userSchema = new mongoose.Schema({
         required: true
 
     },
+
     email: {
         type: String,
         trim: true,
         unique: true,
         required: true
     },
+
     userinfo: {
         type: String,
         trim: true
     },
+
     encry_password: {
         type: String,
         required: true
-    }
-    ,
+    },
+
     salt: {
         type: String
     },
+
     role: {
         type: Number,
         default: 0
     },
+
     purchases: {
         type: Array,
         default: []
     }
 })
+
 // userSchema.pre("save", async function (next) {
 //     if (!this.isModified("password")) return next();
 //     this.password = await bcrypt.hash(this.password, 10);
